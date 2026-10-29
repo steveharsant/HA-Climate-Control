@@ -15,6 +15,7 @@ jobs:
       - uses: hacs/action@main
         with:
           category: plugin
+          ignore: images
   syntax:
     runs-on: ubuntu-latest
     steps:
