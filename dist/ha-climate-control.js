@@ -793,8 +793,10 @@
         for (var i = 0; i < SPEC.length; i++) {
           var s = SPEC[i];
           if (h.states[ids[s.k]]) continue;
+          // HA derives the entity id from the name, so create with the slug-based name and rename afterwards
+          var idName = this._slug.split('_').map(cap).join(' ') + ' HVAC ' + s.n;
           var name = this._title + ' HVAC ' + s.n;
-          var payload = { type: s.d + '/create', name: name, icon: ICONS[s.k] };
+          var payload = { type: s.d + '/create', name: idName, icon: ICONS[s.k] };
           if (s.d === 'input_number') {
             payload.min = s.k === 'off' ? 0.5 : cmin;
             payload.max = s.k === 'off' ? 6 : cmax;
@@ -806,7 +808,13 @@
           if (s.d === 'input_select') payload.options = ['idle', 'cooling', 'heating'];
           var r = await h.callWS(payload);
           var got = s.d + '.' + r.id;
-          if (got !== ids[s.k]) throw new Error('Created ' + got + ' but expected ' + ids[s.k] + ' – a similarly named helper already exists. Remove it and try again.');
+          if (got !== ids[s.k]) {
+            var del = { type: s.d + '/delete' };
+            del[s.d + '_id'] = r.id;
+            await h.callWS(del);
+            throw new Error('Home Assistant created ' + got + ' instead of ' + ids[s.k] + ', so it was removed. An entity with that id may already be registered – check Settings → Entities.');
+          }
+          if (name !== idName) await h.callWS({ type: 'config/entity_registry/update', entity_id: got, name: name });
           created.push(s.k);
         }
         if (!(await this._waitFor(SPEC.map(function (x) { return ids[x.k]; })))) throw new Error('Helpers were created but did not appear in time.');
