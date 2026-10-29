@@ -1,6 +1,6 @@
 /*!
  * HA Climate Control  v0.1.0
- * https://github.com/steveharsant/ha-climate-control
+ * https://github.com/steveharsant/HA-Climate-Control
  *
  * Registers two Lovelace cards:
  *   custom:smart-room-hvac-card  - generic card; one-click setup of helpers + automation for any climate entity
@@ -263,8 +263,8 @@
       body = more;
       var off = el('div', 'row');
       var ol = el('div', 'lbl');
-      ol.appendChild(el('b', null, 'Aim inside the limit'));
-      ol.appendChild(el('span', null, 'How far past a limit to heat or cool'));
+      ol.appendChild(el('b', null, 'Keep going by'));
+      ol.appendChild(el('span', null, 'Heats or cools this far past the limit, then stops'));
       var st = el('div', 'step');
       r.offMinus = el('button', null, '−');
       r.offPlus = el('button', null, '+');
@@ -488,7 +488,7 @@
 
   customElements.define('room-hvac-card', RoomHvacCard);
   window.customCards = window.customCards || [];
-  window.customCards.push({ type: 'room-hvac-card', name: 'Room HVAC', description: 'Thermostat control card for the Room HVAC blueprint helpers.' });
+  window.customCards.push({ type: 'room-hvac-card', name: 'HA Climate Control (manual helpers)', description: 'Control panel only, for rooms whose helpers were made by hand.' });
 })();
 (function () {
   if (customElements.get('smart-room-hvac-card')) return;
@@ -594,7 +594,7 @@
     var tempTpl = o.sensor ? "{{ states('" + o.sensor + "') | float(none) }}" : "{{ state_attr('" + C + "','current_temperature') | float(none) }}";
     return {
       alias: o.title + ' HVAC – thermostat control',
-      description: 'Created by smart-room-hvac-card. Cools above ' + H.max + ', heats below ' + H.min + ', targets ' + H.off + ' inside the limit. Optional fan-only start at ' + H.fanT + ' and off time ' + H.offT + '. Master switch: ' + H.enabled + '.',
+      description: 'Created by smart-room-hvac-card. Cools above ' + H.max + ', heats below ' + H.min + ', keeps going ' + H.off + '° past the limit before stopping. Optional fan-only start at ' + H.fanT + ' and off time ' + H.offT + '. Master switch: ' + H.enabled + '.',
       mode: 'queued', max: 5, max_exceeded: 'silent',
       triggers: [
         tempTrig,
@@ -885,5 +885,5 @@
   customElements.define('smart-room-hvac-card-editor', SmartRoomHvacCardEditor);
   customElements.define('smart-room-hvac-card', SmartRoomHvacCard);
   window.customCards = window.customCards || [];
-  window.customCards.push({ type: 'smart-room-hvac-card', name: 'Smart Room HVAC', description: 'Generic room HVAC control with one-click setup of its helpers and automation.', preview: false, documentationURL: 'https://github.com/steveharsant/ha-climate-control' });
+  window.customCards.push({ type: 'smart-room-hvac-card', name: 'HA Climate Control', description: 'Generic room HVAC control with one-click setup of its helpers and automation.', preview: false, documentationURL: 'https://github.com/steveharsant/HA-Climate-Control' });
 })();
